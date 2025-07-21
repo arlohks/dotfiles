@@ -19,6 +19,7 @@
     pavucontrol
     grim slurp wayshot wl-clipboard cliphist
     curl wget btop brightnessctl kitty keepassxc
+    vesktop
   ];
 
   # Enable and configure programs
@@ -36,14 +37,14 @@
       userName = "arlohks";
       userEmail = "arlo.hicks@pm.me";
     };
-    ssh.startAgent = true;
-    gnupg.agent.enable = true;
+#    ssh.startAgent = true;
+#    gnupg.agent.enable = true;
   };
 
-  home.file = {
-    ".config/hypr/hyprland.conf".source = "${dotfiles}/configs/hypr/hyprland.conf";
-    ".config/tofi/config.toml".source = "${dotfiles}/configs/tofi/config.toml";
-  };
+#  home.file = {
+#    ".config/hypr/hyprland.conf".source = ./configs/hypr/hyprland.conf;
+#    ".config/tofi/config.toml".source = ./configs/tofi/config.toml;
+#  };
 
   # Dotfile management, environment variables, etc.
   # e.g., home.file.".config/hypr/hyprland.conf".text = "...";

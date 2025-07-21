@@ -34,6 +34,8 @@ let
     *.reddit.com
     instagram.com
     *.instagram.com
+    linkedin.com
+    *.linkedin.com
   '';
   timeRestrictedFile = pkgs.writeText "domains-time-restricted.txt" "";
 
@@ -115,15 +117,15 @@ in {
     };
 
     # greetd login manager
-    greetd = {
-      enable = true;
-      settings = rec {
-        initial_session = {
-          command = "${pkgs.hyprland}/bin/Hyprland";
-          user = "arlo";
-	};
-        default_session = initial_session; # Auto-login into Hyprland without prompting
-      };
+#    greetd = {
+#      enable = true;
+#      settings = rec {
+#        initial_session = {
+#          command = "${pkgs.hyprland}/bin/Hyprland";
+#          user = "arlo";
+#	};
+#        default_session = initial_session; # Auto-login into Hyprland without prompting
+#      };
       # Disable automatic restarts when using autologin
       restart = false; # otherwise greetd will re-trigger autologin on exit
     };
@@ -193,6 +195,15 @@ in {
       pulse.enable = true;
       #jack.enable = true;
     };
+  };
+
+  system.userActivationScripts.clearTofiCache = {
+    text = ''
+      # !/usr/bin/env bash
+      rm -f "$HOME/.cache/tofi-drun" "$HOME/.cache/tofi-compgen"
+    '';
+    # optional dependency ordering:
+    deps = [ ];   # leave empty – script is trivial
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -284,7 +295,10 @@ in {
   nixpkgs.config.allowUnfree = true;
   
   programs = {
-    hyprland.enable = true;
+    hyprland = {
+      enable = true;
+      withUWSM = true;
+    };
     zsh.enable = true; # in home.nix
     steam = {
       enable = false;
@@ -307,7 +321,7 @@ in {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     ### Themes & Appearance 
-    papirus-icon-theme adwaita-icon-theme lxappearance apple-cursor
+    papirus-icon-theme adwaita-icon-theme lxappearance apple-cursor uwsm
 
     ### GUI Applications
     ungoogled-chromium vesktop thunderbird spotify
@@ -320,7 +334,7 @@ in {
 #    wl-clipboard cliphist wayshot grim slurp # in home.nix
 
     ### File & Disk Utilities
-    ncdu plocate macchina 
+    ncdu plocate macchina fastfetch
 
     ### Languages
 #    python3 python3Packages.pip R nodejs typescript tailwindcss html-tidy # in home.nix
