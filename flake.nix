@@ -7,32 +7,40 @@
       url                   = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    dotfiles = {
+      url = "path:.";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, dotfiles, ... }:
     let
       system = "x86_64-linux";
+      lib = nixpkgs.lib;
     in {
       # Expose a NixOS configuration
-      nixosConfigurations.myHost = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.arlo = nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
-          ./configuration.nix
+	  # Resolve to /etc/nixos/configuration.nix
+          dotfiles./configuration.nix
+	  dotfiles./hardware-configuration.nix
+
           # Import Home Manager as a NixOS module
           ({ config, pkgs, ... }: {
             imports = [ home-manager.nixosModules.home-manager ];
-            home-manager.users.myUser = home-manager.lib.homeManagerConfiguration {
+
+            home-manager.users.arlo = home-manager.lib.homeManagerConfiguration {
               inherit system;
-              modules = [ ./home.nix ];
+              modules = [ dotfiles./home.nix ];
             };
           })
         ];
       };
 
       # Optionally expose Home Manager standalone
-      homeConfigurations.myUser = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations.arlo = home-manager.lib.homeManagerConfiguration {
         inherit system;
-        modules = [ ./home.nix ];
+        modules = [ dotfiles./home.nix ];
       };
     };
 }

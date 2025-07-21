@@ -40,6 +40,11 @@
     gnupg.agent.enable = true;
   };
 
+  home.file = {
+    ".config/hypr/hyprland.conf".source = "${dotfiles}/configs/hypr/hyprland.conf";
+    ".config/tofi/config.toml".source = "${dotfiles}/configs/tofi/config.toml";
+  };
+
   # Dotfile management, environment variables, etc.
   # e.g., home.file.".config/hypr/hyprland.conf".text = "...";
 }
