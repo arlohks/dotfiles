@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url     = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager = {
-      url                   = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -20,15 +20,16 @@
       modules = [
         ./configuration.nix
         ./hardware-configuration.nix
-
-        # (Optional) Home Manager NixOS module
-        ({ config, pkgs, ... }: {
-          imports = [ home-manager.nixosModules.home-manager ];
+        # Home‑Manager integration:
+        home-manager.nixosModules.home-manager
+ 
+        # Tell Home‑Manager to build “arlo” from your home.nix module:
+        {
           home-manager.users.arlo = {
-            home.stateVersion = "25.05";
-            imports = [ ./home.nix ];
+            pkgs    = pkgs;
+            modules = [ ./home.nix ];
           };
-        })
+        }
       ];
     };
 

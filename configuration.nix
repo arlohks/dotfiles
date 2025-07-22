@@ -6,9 +6,6 @@
 
 let
 
-  ### Home Manager Setup
-#  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
-
   ### Hosts file setup
   # 1. Fetch raw StevenBlack hosts file
   stevenBlackHosts = builtins.fetchurl {
@@ -18,8 +15,8 @@ let
 
   # 2. Strip comments & IPs, leave only domains
   stevenBlackBlocklist = pkgs.runCommand "stevenblack-blocklist.txt" { } ''
-    grep -vE '^#|localhost|127\.0\.0\.1' ${stevenBlackHosts} \
-      | awk '{ print $2 }' | sort | uniq > $out
+    grep -vE '^#|localhost|127\.0\.0\.1' ${stevenBlackHosts} |
+      awk '{ print $2 }' | sort -u > $out
   '';
 
   # 3. Fetch the blocklist-generation script
@@ -63,7 +60,7 @@ in {
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  
+
   networking = {
     # Enable networking
     networkmanager = {
@@ -80,7 +77,13 @@ in {
     nameservers = [ "127.0.0.1" ];
   };
 
-  systemd.network.enable = false;
+  systemd = {
+    network.enable = false;
+    services.dnscrypt-proxy2 = {
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+    };
+  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -127,8 +130,8 @@ in {
 #        default_session = initial_session; # Auto-login into Hyprland without prompting
 #      };
       # Disable automatic restarts when using autologin
-      restart = false; # otherwise greetd will re-trigger autologin on exit
-    };
+#      bestart = false; # otherwise greetd will re-trigger autologin on exit
+#    };
 
     tlp = {
       enable = true;
@@ -278,7 +281,7 @@ in {
     # Hyprland-specific/XDG compliance
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
-    XDH_SESSION_DESKTOP = "Hyprland";
+    XDG_SESSION_DESKTOP = "Hyprland";
 
     ### Miscellaneous
     _JAVA_AWT_WM_NONREPARENTING = "1";
@@ -331,7 +334,7 @@ in {
     hyprlock hypridle waylock wlogout swayosd swaynotificationcenter swww tofi # launcher, bar, wallpaper daemon
 
     ### Screenshot & Clipboard (Wayland)
-#    wl-clipboard cliphist wayshot grim slurp # in home.nix
+    wl-clipboard cliphist wayshot grim slurp # in home.nix
 
     ### File & Disk Utilities
     ncdu plocate macchina fastfetch
@@ -346,6 +349,7 @@ in {
 #    wget curl btop brightnessctl mesa kitty # in home.nix
     kitty
     mesa
+    home-manager
 
     ### Misc
 #    keepassxc # in home.nix
